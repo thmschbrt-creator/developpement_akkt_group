@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKKT Group · Vision nationale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0c;
+    --panel:#121214;
+    --panel-2:#1a1a1e;
+    --line:#26262c;
+    --ink:#efece5;
+    --muted:#8b867c;
+    --faint:#5b574e;
+    --gold:#c6a968;
+    --gold-soft:#e3cd97;
+    --gold-dim:#6e5e38;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 700px at 78% -8%, #1d1a14 0%, transparent 55%),
+      radial-gradient(900px 600px at 10% 110%, #15140f 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);font-family:'DM Mono',monospace;line-height:1.5;
+    padding:clamp(20px,4vw,60px);min-height:100vh;
+  }
+  .wrap{max-width:1140px;margin:0 auto}
+
+  .eyebrow{font-size:11px;letter-spacing:.46em;text-transform:uppercase;color:var(--gold)}
+  h1{
+    font-family:'Cormorant Garamond',serif;font-weight:500;
+    font-size:clamp(44px,9vw,104px);line-height:.96;letter-spacing:.5px;margin:.14em 0 .2em;
+  }
+  h1 .n{color:var(--gold);font-style:italic;font-weight:600}
+  .lede{color:var(--muted);font-size:14px;max-width:64ch}
+  .lede em{color:var(--ink);font-style:normal}
+
+  hr.rule{border:0;border-top:1px solid var(--line);margin:38px 0}
+
+  /* ---- timeline control ---- */
+  .timeline{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:8px}
+  .playbtn{
+    background:transparent;border:1px solid var(--gold-dim);color:var(--gold);
+    font-family:'DM Mono';font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    padding:11px 20px;cursor:pointer;transition:.18s;white-space:nowrap;
+  }
+  .playbtn:hover{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+  .scrubwrap{flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:2px;
+    background:linear-gradient(90deg,var(--gold) var(--p,100%),var(--line) var(--p,100%));
+    outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--bg);
+    border:2px solid var(--gold);box-shadow:0 0 0 5px rgba(198,169,104,.14),0 0 18px rgba(198,169,104,.4);
+  }
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--bg);border:2px solid var(--gold)}
+  .yticks{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);letter-spacing:.1em}
+  .yearnow{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--ink);min-width:120px}
+  .yearnow b{color:var(--gold);font-weight:600}
+
+  /* ---- stat row ---- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:30px 0 46px}
+  .stat{background:var(--panel);padding:22px 20px 24px}
+  .stat .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(28px,4.6vw,46px);margin-top:12px;line-height:1;color:var(--ink)}
+  .stat .v.gold{color:var(--gold)}
+  .stat .v.neg{color:#c2715f}
+  .stat .sub{font-size:11px;color:var(--faint);margin-top:8px}
+
+  /* ---- main split: hexagon + chart ---- */
+  .split{display:grid;grid-template-columns:1fr 1.15fr;gap:22px;align-items:stretch}
+  .block{background:var(--panel);border:1px solid var(--line);padding:24px;position:relative}
+  .block .cap{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .block .cap b{color:var(--gold);font-weight:400}
+  .block h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;margin:6px 0 2px}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .hex circle.ctr{transition:opacity .55s ease, r .55s ease}
+  .hexlabel{font-family:'DM Mono';fill:var(--faint);font-size:9px;letter-spacing:.3em}
+
+  .legend{display:flex;gap:20px;font-size:11px;color:var(--muted);margin:4px 0 14px;letter-spacing:.05em}
+  .legend i{display:inline-block;width:16px;height:2px;vertical-align:middle;margin-right:7px}
+
+  /* ---- CA bars ---- */
+  .ca-block{margin-top:22px}
+
+  /* ---- vision banner ---- */
+  .vision{
+    margin-top:48px;border:1px solid var(--gold-dim);
+    background:linear-gradient(120deg,#16130c,#101012);
+    padding:clamp(26px,4vw,42px);
+  }
+  .vision .lead{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+  .vision .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:26px}
+  .vision .big{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(34px,5.5vw,58px);line-height:1;color:var(--gold-soft)}
+  .vision .lab{font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
+  .vision .kicker{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,3vw,30px);color:var(--ink);margin-top:30px}
+  .vision .kicker b{color:var(--gold);font-weight:600;font-style:normal}
+
+  .foot{margin-top:38px;color:var(--faint);font-size:11px;line-height:1.7}
+  .foot b{color:var(--muted);font-weight:400}
+
+  @media(max-width:820px){
+    .split{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .vision .grid{grid-template-columns:1fr;gap:24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">AKKT Group · Développement national</div>
+    <h1>De <span class="n" id="hero_a">2</span> à <span class="n" id="hero_b">65</span> centres.</h1>
+    <p class="lede">Onze ans pour transformer un studio en <em>réseau premium</em> à l'échelle du pays.
+      Déplace la frise temporelle — ou lance la projection — et regarde l'Hexagone se peupler,
+      le chiffre d'affaires du siège accélérer et la valorisation grimper jusqu'à <em>près de 45 M€</em>.</p>
+  </header>
+
+  <hr class="rule">
+
+  <div class="timeline">
+    <button class="playbtn" id="play">▶ Lancer la projection</button>
+    <div class="scrubwrap">
+      <input id="yr" type="range" min="1" max="11" step="1" value="11">
+      <div class="yticks"><span>An 1</span><span>An 3</span><span>An 5</span><span>An 7</span><span>An 9</span><span>An 11</span></div>
+    </div>
+    <div class="yearnow">An <b id="yearnow">11</b></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Centres ouverts</div><div class="v gold" id="st_c">—</div><div class="sub" id="st_c_sub">réseau national</div></div>
+    <div class="stat"><div class="k">CA siège</div><div class="v" id="st_ca">—</div><div class="sub">fees + redevances</div></div>
+    <div class="stat"><div class="k">Valorisation moyenne</div><div class="v gold" id="st_v">—</div><div class="sub">CA · FCC · EBITDA</div></div>
+    <div class="stat"><div class="k">Trésorerie disponible</div><div class="v" id="st_t">—</div><div class="sub">exploitation</div></div>
+  </div>
+
+  <div class="split">
+    <div class="block">
+      <div class="cap">L'Hexagone · <b>maillage du territoire</b></div>
+      <h3 id="hex_h">65 centres déployés</h3>
+      <svg class="hex" id="hex" viewBox="0 0 360 360" aria-hidden="true"></svg>
+    </div>
+
+    <div class="block">
+      <div class="cap">Trajectoire · <b>valorisation du groupe</b></div>
+      <h3>La crosse de hockey</h3>
+      <div class="legend">
+        <span><i style="background:var(--gold)"></i>Valorisation moyenne</span>
+        <span><i style="background:var(--gold-dim)"></i>Fourchette des méthodes</span>
+      </div>
+      <svg id="valo" viewBox="0 0 560 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    </div>
+  </div>
+
+  <div class="block ca-block">
+    <div class="cap">Accélération · <b>chiffre d'affaires du siège</b></div>
+    <h3>De 38 k€ à 3,16 M€</h3>
+    <svg id="ca" viewBox="0 0 1080 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+  </div>
+
+  <!-- VISION BANNER -->
+  <div class="vision">
+    <div class="lead">À l'horizon An 11</div>
+    <div class="grid">
+      <div><div class="big" id="v_capex">9,75 M€</div><div class="lab">de capital investi (CAPEX cumulé sur 11 ans)</div></div>
+      <div><div class="big" id="v_valo">44,7 M€</div><div class="lab">de valorisation du groupe</div></div>
+      <div><div class="big" id="v_bnet">35 M€</div><div class="lab">de valeur créée, nette des capitaux investis (valo − CAPEX cumulé)</div></div>
+    </div>
+    <div class="kicker">Soit <b>×4,6</b> sur le capital engagé — 65 centres, un seul siège, une marque.</div>
+  </div>
+
+  <p class="foot">
+    <b>Lecture —</b> la valorisation moyenne agrège trois méthodes (1×CA, 9×FCC, 6×EBITDA). La sérialité du modèle (2 → 65 centres) porte l'effet de levier : chaque ouverture alimente le CA du siège sans rouvrir la structure. <b>Projection</b> à vocation d'ambition, dérivée de ton plan à 11 ans — les premières années restent en investissement avant le décollage.
+  </p>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const D = {
+  centres: [2,2,3,5,8,12,18,28,42,65,65],
+  ca:      [38397.84,95661.10,116371.48,184156.68,300528.16,465485.91,698228.87,1066542.22,1629200.70,2482198.88,3158108.20],
+  valo:    [-36434.98,1376901.87,1348445.54,2008440.14,3356885.68,5393782.15,8090673.22,12107553.50,18878237.52,28260443.61,44749310.87],
+  vCA:     [383978.37,956610.97,1148600.15,1818894.82,2967494.97,4594400.60,6891600.90,10529390.54,16080402.11,24504581.53,31089856.39],
+  vFCC:    [-431850.25,1655094.24,1439169.11,2050791.11,3489960.22,5756676.46,8635014.68,12736596.90,20148367.60,29790701.14,53790562.84],
+  vEBIT:   [-61433.06,1519000.41,1457567.35,2155634.49,3613201.84,5830269.39,8745404.08,13056673.06,20405942.86,30486048.17,49367513.38],
+  treso:   [-47983.36,135916.00,145823.68,73689.36,11462.71,51093.43,110539.51,25716.94,164424.45,24502.36,6001231.56],
+};
+const N = 11;
+
+/* ---- formatting ---- */
+function compact(v){
+  const s = v<0 ? '-' : '';
+  const a = Math.abs(v);
+  if(a>=1e6) return s + (a/1e6).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:2}) + ' M€';
+  if(a>=1e3) return s + Math.round(a/1e3).toLocaleString('fr-FR') + ' k€';
+  return s + Math.round(a).toLocaleString('fr-FR') + ' €';
+}
+
+/* ---- count-up ---- */
+const shown = {c:0, ca:0, v:0, t:0};
+function tween(key, to, fmt, el, dur=750){
+  const from = shown[key];
+  if(reduce){ shown[key]=to; el.textContent=fmt(to); return; }
+  const t0 = performance.now();
+  function step(t){
+    const k = Math.min(1,(t-t0)/dur);
+    const e = 1-Math.pow(1-k,3);
+    const cur = from + (to-from)*e;
+    el.textContent = fmt(cur);
+    if(k<1) requestAnimationFrame(step); else { shown[key]=to; el.textContent=fmt(to); }
+  }
+  requestAnimationFrame(step);
+}
+
+/* ---- hexagon ---- */
+const HEX = $('hex');
+const cx=180, cy=186, RR=120, Rhex=RR*1.16;
+const GOLDEN = Math.PI*(3-Math.sqrt(5));
+const dotPts = [];
+for(let i=0;i<65;i++){
+  const r = Math.sqrt((i+0.5)/65)*RR;
+  const a = i*GOLDEN;
+  dotPts.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]);
+}
+function hexPath(){
+  let p='';
+  for(let k=0;k<6;k++){
+    const ang = -Math.PI/2 + k*Math.PI/3;
+    const x=cx+Rhex*Math.cos(ang), y=cy+Rhex*Math.sin(ang);
+    p += (k?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+  }
+  return p+'Z';
+}
+function buildHex(){
+  let dots='';
+  dotPts.forEach((p,i)=>{
+    dots += `<circle class="ctr" data-i="${i}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="0" fill="var(--gold)" filter="url(#glow)" opacity="0"/>`;
+  });
+  HEX.innerHTML = `
+    <defs>
+      <filter id="glow" x="-200%" y="-200%" width="500%" height="500%">
+        <feGaussianBlur stdDeviation="2.4" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="${hexPath()}" fill="rgba(198,169,104,.03)" stroke="var(--gold-dim)" stroke-width="1"/>
+    <text class="hexlabel" x="${cx}" y="${cy+Rhex+22}" text-anchor="middle">FRANCE</text>
+    ${dots}`;
+}
+let prevCount=0;
+function renderHex(count){
+  const dots = HEX.querySelectorAll('circle.ctr');
+  dots.forEach((d,i)=>{
+    const on = i<count;
+    const isNew = i>=prevCount && i<count;
+    d.style.transitionDelay = (isNew && !reduce) ? ((i-prevCount)*22)+'ms' : '0ms';
+    d.setAttribute('r', on ? '3.4' : '0');
+    d.style.opacity = on ? '1' : '0';
+  });
+  prevCount = count;
+}
+
+/* ---- valuation chart ---- */
+function drawValo(year){
+  const W=560,H=320,pL=6,pR=6,pT=18,pB=30;
+  const ymin = Math.min(0, ...D.valo, ...D.vFCC, ...D.vEBIT);
+  const ymax = Math.max(...D.vFCC, ...D.vEBIT, ...D.valo)*1.06;
+  const X = i => pL + i/(N-1)*(W-pL-pR);
+  const Y = v => H-pB - (v-ymin)/(ymax-ymin)*(H-pT-pB);
+  const line = arr => arr.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
+  const band = D.vFCC.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(Math.max(D.vFCC[i],D.vEBIT[i],D.vCA[i])).toFixed(1)).join(' ')
+    + ' ' + D.vCA.map((v,i)=>'L'+X(N-1-i).toFixed(1)+' '+Y(Math.min(D.vFCC[N-1-i],D.vEBIT[N-1-i],D.vCA[N-1-i])).toFixed(1)).join(' ') + ' Z';
+  const area = `M${X(0)} ${Y(0)} ` + D.valo.map((v,i)=>'L'+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ') + ` L${X(N-1)} ${Y(0)} Z`;
+
+  let grid='';
+  for(let g=0; g<=4; g++){
+    const v = ymin + (ymax-ymin)*g/4, y=Y(v);
+    grid += `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#1f1f24"/>`;
+    grid += `<text x="${W-pR}" y="${y-4}" text-anchor="end" fill="#5b574e" font-size="9" font-family="DM Mono">${compact(v)}</text>`;
+  }
+  const idx = year-1, mx=X(idx), my=Y(D.valo[idx]);
+  $('valo').innerHTML = `
+    <defs><linearGradient id="vg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(198,169,104,.32)"/><stop offset="100%" stop-color="rgba(198,169,104,0)"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${band}" fill="rgba(198,169,104,.07)" stroke="none"/>
+    <path d="${area}" fill="url(#vg)" stroke="none"/>
+    <path d="${line(D.valo)}" fill="none" stroke="var(--gold)" stroke-width="2.4"/>
+    <line x1="${mx}" y1="${pT}" x2="${mx}" y2="${H-pB}" stroke="#3a3a42" stroke-dasharray="3 3"/>
+    <circle cx="${mx}" cy="${my}" r="5" fill="var(--gold)" filter="url(#glow2)"/>
+    <text x="${mx>W-120?mx-10:mx+10}" y="${my-10}" text-anchor="${mx>W-120?'end':'start'}" fill="var(--ink)" font-size="12" font-family="Cormorant Garamond" font-weight="600">${compact(D.valo[idx])}</text>
+    <filter id="glow2" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3"/></filter>
+  `;
+}
+
+/* ---- CA bars ---- */
+function drawCA(year){
+  const W=1080,H=240,pT=24,pB=26,gap=14;
+  const bw=(W-gap*(N-1))/N;
+  const ymax=Math.max(...D.ca)*1.08;
+  const Y=v=>H-pB-(v/ymax)*(H-pT-pB);
+  let bars='';
+  D.ca.forEach((v,i)=>{
+    const x=i*(bw+gap), y=Y(v), h=H-pB-y;
+    const active=(i===year-1);
+    bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}"
+       fill="${active?'var(--gold)':'#2c2a22'}" />`;
+    bars += `<text x="${(x+bw/2).toFixed(1)}" y="${H-9}" text-anchor="middle" fill="${active?'var(--gold)':'#5b574e'}" font-size="10" font-family="DM Mono">A${i+1}</text>`;
+    if(active) bars += `<text x="${(x+bw/2).toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" fill="var(--ink)" font-size="11" font-family="Cormorant Garamond" font-weight="600">${compact(v)}</text>`;
+  });
+  $('ca').innerHTML = bars;
+}
+
+/* ---- master render ---- */
+function render(year){
+  const i = year-1;
+  $('yr').style.setProperty('--p', ((year-1)/(N-1)*100)+'%');
+  $('yearnow').textContent = year;
+
+  tween('c', D.centres[i], v=>Math.round(v).toString(), $('st_c'));
+  tween('ca', D.ca[i], compact, $('st_ca'));
+  tween('v', D.valo[i], compact, $('st_v'));
+  tween('t', D.treso[i], compact, $('st_t'));
+  $('st_v').classList.toggle('neg', D.valo[i]<0);
+  $('st_t').classList.toggle('neg', D.treso[i]<0);
+  $('st_v').classList.toggle('gold', D.valo[i]>=0);
+  $('st_c_sub').textContent = D.centres[i]>1 ? 'réseau national' : 'studio fondateur';
+
+  $('hex_h').textContent = D.centres[i] + (D.centres[i]>1?' centres déployés':' centre fondateur');
+  renderHex(D.centres[i]);
+  drawValo(year);
+  drawCA(year);
+}
+
+/* ---- play ---- */
+let playing=false, timer=null;
+function play(){
+  if(playing){ stop(); return; }
+  playing=true; $('play').textContent='❚❚ Pause';
+  let y = 1; $('yr').value=1; prevCount=0; render(1);
+  timer = setInterval(()=>{
+    y++;
+    if(y>N){ stop(); return; }
+    $('yr').value=y; render(y);
+  }, 720);
+}
+function stop(){ playing=false; clearInterval(timer); $('play').textContent='▶ Lancer la projection'; }
+
+$('yr').addEventListener('input', e=>{ if(playing) stop(); render(+e.target.value); });
+$('play').addEventListener('click', play);
+
+/* ---- intro ---- */
+buildHex();
+function heroCount(){
+  if(reduce){ $('hero_a').textContent='2'; $('hero_b').textContent='65'; return; }
+  const t0=performance.now();
+  (function s(t){ const k=Math.min(1,(t-t0)/1400); const e=1-Math.pow(1-k,3);
+    $('hero_b').textContent=Math.round(2+63*e); if(k<1)requestAnimationFrame(s); })(t0);
+}
+heroCount();
+render(11);
+</script>
+</body>
+</html>
